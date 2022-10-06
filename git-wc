@@ -1,0 +1,18 @@
+#!/bin/sh
+
+countWords() {
+	commit="$1"
+	word_count=$(git show --format='%B' --no-patch "$commit" | wc -w)
+	detail="$(git show --format='%h %aN / %cN' --no-patch $commit)"
+	echo "$word_count $detail"
+	exit 0
+}
+
+[ -n "$2" ] && countWords "$2"
+
+range="origin/master"
+[ -n "$1" ] && range="origin/master~$1..origin/master"
+
+echo "$range"
+
+git log --format='%H' "$range" | xargs -I{} -P 16 $0 --commit "{}"
